@@ -7,15 +7,17 @@ var File_Crawler = /** @class */ (function () {
     function File_Crawler(config) {
         this.config = config;
         // container for the returned image list
-        this.image_source_list = [];
+        this.source_list = [];
     }
     ;
     //Initilize the async request
     File_Crawler.prototype.init = function () {
         var _ = this;
         return new Promise(function (resolve, reject) {
-            new Request(_.config.url + _.config.directory, function (error, response, body) {
+            console.log(_.config.url + _.config.directory);
+            new Request({ url: _.config.url + _.config.directory, strictSSL: false }, function (error, response, body) {
                 if (error === null && (response && response.statusCode == 200)) {
+                    console.log(body);
                     _.parse(body);
                     resolve();
                 }
@@ -36,7 +38,17 @@ var File_Crawler = /** @class */ (function () {
                     // validate
                     if (this.validate(HTML_images_elements[i].src)) {
                         // add to list
-                        this.image_source_list.push(HTML_images_elements[i].src);
+                        this.source_list.push(HTML_images_elements[i].src);
+                    }
+                }
+                break;
+            case 'link_src':
+                var HTML_link_elements = HTML_document.window.document.querySelectorAll("a");
+                for (var i = 0; i < HTML_link_elements.length; i++) {
+                    // validate
+                    if (this.validate(HTML_link_elements[i].href)) {
+                        // add to list
+                        this.source_list.push(HTML_link_elements[i].href);
                     }
                 }
                 break;
@@ -51,6 +63,7 @@ var File_Crawler = /** @class */ (function () {
             return url;
         }
         switch (this.config.query_type) {
+            case 'link_src':
             case 'img_src':
                 return url.includes(this.config.file_pattern) ? url : false;
                 break;
@@ -61,12 +74,12 @@ var File_Crawler = /** @class */ (function () {
     };
     // return the requested image/s by count
     File_Crawler.prototype.output = function () {
-        if (this.image_source_list) {
-            if (this.image_source_list.length < this.config.count) {
-                return this.image_source_list;
+        if (this.source_list) {
+            if (this.source_list.length < this.config.count) {
+                return this.source_list;
             }
             else {
-                return this.image_source_list.slice(0, this.config.count);
+                return this.source_list.slice(0, this.config.count);
             }
         }
         else {

@@ -4,7 +4,6 @@ import * as TelegramBot from 'node-telegram-bot-api';
 interface Config {
     [ index: number ]: {
       token: string;
-      type: string;
       callback: any;
      };
 }
@@ -48,9 +47,4 @@ export default class Bot_Core
       }
     }
   }
-
-  /**
-  * Send the message
-  * https://core.telegram.org/bots/api#sendphoto
-  */
 }

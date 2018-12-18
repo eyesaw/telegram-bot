@@ -2,6 +2,7 @@ import * as Request from 'request';
 import * as Jsdom from 'jsdom';
 import * as Promise from 'promise';
 
+
 interface FCConfig {
   url:string; // url to scrape
   directory:string; // subdirectory for the url
@@ -13,7 +14,7 @@ interface FCConfig {
 export default class File_Crawler
 {
     // container for the returned image list
-    private image_source_list:string[] = [];
+    private source_list:string[] = [];
 
     constructor( private config:FCConfig ){};
 
@@ -24,7 +25,7 @@ export default class File_Crawler
 
       return new Promise((resolve, reject) => {
 
-        new Request( _.config.url + _.config.directory, function( error, response, body ) {
+        new Request( { url:_.config.url + _.config.directory, strictSSL:false },  function( error, response, body ) {
           if( error === null && ( response && response.statusCode == 200 ) ) {
             _.parse( body );
             resolve();
@@ -52,7 +53,20 @@ export default class File_Crawler
               // validate
               if( this.validate( HTML_images_elements[i].src ) ){
                   // add to list
-                  this.image_source_list.push( HTML_images_elements[i].src );
+                  this.source_list.push( HTML_images_elements[i].src );
+              }
+          }
+
+          break;
+
+        case 'link_src':
+          let HTML_link_elements = HTML_document.window.document.querySelectorAll("a");
+
+          for( let i = 0; i < HTML_link_elements.length; i++ ) {
+              // validate
+              if( this.validate( HTML_link_elements[i].href ) ){
+                  // add to list
+                  this.source_list.push( HTML_link_elements[i].href );
               }
           }
 
@@ -72,6 +86,7 @@ export default class File_Crawler
 
       switch( this.config.query_type )
       {
+        case 'link_src':
         case 'img_src':
           return url.includes( this.config.file_pattern ) ? url : false;
           break;
@@ -85,11 +100,11 @@ export default class File_Crawler
     // return the requested image/s by count
     public output():string[]
     {
-      if( this.image_source_list ){
-        if(this.image_source_list.length < this.config.count ){
-            return this.image_source_list;
+      if( this.source_list ){
+        if( this.source_list.length < this.config.count ){
+            return this.source_list;
         } else {
-            return this.image_source_list.slice(0, this.config.count);
+            return this.source_list.slice(0, this.config.count);
         }
       } else {
         throw new Error( '[!] Could not recive anything' );
