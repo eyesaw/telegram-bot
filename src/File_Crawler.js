@@ -14,10 +14,8 @@ var File_Crawler = /** @class */ (function () {
     File_Crawler.prototype.init = function () {
         var _ = this;
         return new Promise(function (resolve, reject) {
-            console.log(_.config.url + _.config.directory);
             new Request({ url: _.config.url + _.config.directory, strictSSL: false }, function (error, response, body) {
                 if (error === null && (response && response.statusCode == 200)) {
-                    console.log(body);
                     _.parse(body);
                     resolve();
                 }

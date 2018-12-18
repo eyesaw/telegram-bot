@@ -20,14 +20,16 @@ var config = [
         () => {
           let output = file_crawler.output();
 
-          bot.sendDocument(
-            user.chat.id,
-            output[0]
-          )
+          for(let i = 0; i < output.length; i++){
+            bot.sendDocument(
+              user.chat.id,
+              output[i]
+            )
+          }
         }
       );
     }
   }
 ]
 
-new Bot_Core( '713471425:AAE1HnL43msi_hyIM1Oe8EcxVDmFe637Tbs', config);
+new Bot_Core( 'MY::KEY', config);
