@@ -21,10 +21,14 @@ var config = [
           let output = file_crawler.output();
 
           for(let i = 0; i < output.length; i++){
-            bot.sendDocument(
-              user.chat.id,
-              output[i]
-            )
+
+            if ( output[i].search('KW-') !== -1 ) {
+              bot.sendDocument(
+                user.chat.id,
+                output[i]
+              )
+            }
+
           }
         }
       );
