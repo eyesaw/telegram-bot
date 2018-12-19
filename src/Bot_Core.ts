@@ -40,7 +40,7 @@ export default class Bot_Core
     for ( var i = 0; i < Object.keys( this.config ).length; i++ )
     {
 
-      if( match[1].localeCompare( _.config[i].token ) === 0 )
+      if( match[1].search( _.config[i].token ) !== -1 )
       {
         this.config[i].callback( user, this.bot );
         return;

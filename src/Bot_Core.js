@@ -22,7 +22,7 @@ var Bot_Core = /** @class */ (function () {
     Bot_Core.prototype.parse = function (user, match) {
         var _ = this;
         for (var i = 0; i < Object.keys(this.config).length; i++) {
-            if (match[1].localeCompare(_.config[i].token) === 0) {
+            if (match[1].search(_.config[i].token) !== -1) {
                 this.config[i].callback(user, this.bot);
                 return;
             }
